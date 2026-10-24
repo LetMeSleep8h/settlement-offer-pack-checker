@@ -14,3 +14,21 @@ test("expiry risk when funding date is after expiry", () => { const r = L.checkP
 test("funding projection when balance already covers offer", () => { const f = L.fundingProjection(5000,300,4000,"2026-01-01"); assert.equal(f.monthsNeeded,0); assert.equal(f.fundingDate,"2026-01-01"); });
 test("client summary states payee, expiry, fee and total cost", () => { const s = L.buildClientSummary(good, L.checkPack(good,cfg)); assert.ok(s.includes("Creditor A")); assert.ok(s.includes("2027-06-01")); assert.ok(s.includes("Total cost: 6500.00")); });
 test("audit summary and CSV export", () => { const a = L.auditPacks([good, {...good, pack_id:"P2", creditor:""}], cfg); assert.equal(a.summary.pass,1); assert.equal(a.summary.fail,1); assert.ok(L.toAuditCSV(a.results).includes("failed_checks")); });
+test("fee_basis defaults to enrolled and says so in the audit export", () => {
+  const r = L.checkPack(good, cfg);
+  assert.equal(r.feeBasis, "enrolled");
+  assert.ok(L.toAuditCSV([r]).includes("fee_basis"));
+  assert.ok(L.toAuditCSV([r]).includes("enrolled"));
+});
+
+test("a savings basis computes the expected fee from the offer", () => {
+  const r = L.checkPack({ ...good, fee_basis: "savings", fee_amount: "1000" }, cfg);
+  assert.equal(r.feeBasis, "savings");
+  assert.equal(r.expectedFeeAmount, 1000); // 25% of the 4000 offer
+  assert.equal(r.status, "PASS");
+});
+
+test("an unknown fee_basis fails", () => {
+  const r = L.checkPack({ ...good, fee_basis: "whatever" }, cfg);
+  assert.ok(r.failedChecks.some(x => x.includes("Invalid fee_basis")));
+});
