@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settlement Offer Pack Checker: Gate settlement offers before they reach a client</title>
+<meta name="description" content="Check settlement offer packs for completeness, fee and schedule maths, and expiry risk before they go to a client, with a plain-language client summary and audit CSV.">
+<meta name="keywords" content="settlement offer checklist, debt settlement offer validation, settlement pack audit, fee calculation checker, dedicated account funding">
+<meta name="author" content="Amir Hussain">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://aamirtechs.github.io/settlement-offer-pack-checker/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="theme-color" content="#0b1f3a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Settlement Offer Pack Checker">
+<meta property="og:description" content="Check settlement offer packs for completeness, fee and schedule maths, and expiry risk before they go to a client, with a plain-language client summary and audit CSV.">
+<meta property="og:url" content="https://aamirtechs.github.io/settlement-offer-pack-checker/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Settlement Offer Pack Checker">
+<meta name="twitter:description" content="Check settlement offer packs for completeness, fee and schedule maths, and expiry risk before they go to a client, with a plain-language client summary and audit CSV.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Settlement Offer Pack Checker", "applicationCategory": "BusinessApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Amir Hussain", "url": "https://aamirtechs.com"}, "url": "https://aamirtechs.github.io/settlement-offer-pack-checker/", "description": "Check settlement offer packs for completeness, fee and schedule maths, and expiry risk before they go to a client, with a plain-language client summary and audit CSV."}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+:root{--navy:#0b1f3a;--navy2:#122c50;--gold:#d4a72c;--ink:#16233a;--muted:#5a6a84;--line:#e3e9f2;--bg:#f6f8fb;--card:#ffffff}
+header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:44px 20px 34px;text-align:center}
+header h1{font-family:'Sora',sans-serif;font-size:2rem;margin:0 0 10px}header h1 span{color:var(--gold)}
+header p{max-width:760px;margin:0 auto 16px;color:#dbe4f2}
+.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.stats span{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:5px 14px;font-size:.85rem}
+main{max-width:980px;margin:-18px auto 0;padding:0 16px 30px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 8px 30px rgba(11,31,58,.08)}
+label{display:block;font-weight:700;font-size:.9rem;margin:14px 0 6px}
+textarea,input[type=text],input[type=number],select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff}
+textarea{min-height:130px;font-family:ui-monospace,Menlo,monospace;font-size:.85rem}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.btn-run{background:var(--gold);color:var(--navy);border:0;border-radius:9px;padding:12px 22px;font-weight:800;cursor:pointer;font-size:1rem;margin-top:16px}
+.btn-sub{background:var(--navy);color:#fff;border:0;border-radius:9px;padding:10px 16px;font-weight:700;cursor:pointer;margin:8px 8px 0 0}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.87rem}th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}th{background:var(--navy);color:#fff}
+.flag{color:#b3261e;font-weight:700}.ok{color:#137333;font-weight:700}.stop{color:#fff;background:#b3261e;font-weight:800;padding:2px 8px;border-radius:6px}
+pre{background:#0b1f3a;color:#e8eef8;border-radius:10px;padding:14px;overflow:auto;font-size:.82rem;white-space:pre-wrap;word-break:break-word}
+.privacy{color:var(--muted);font-size:.9rem;margin-top:14px}.small{font-size:.85rem;color:var(--muted)}
+section.how{max-width:980px;margin:22px auto;padding:0 16px}section.how h2{font-family:'Sora',sans-serif}
+footer{background:var(--navy);color:#dbe4f2;text-align:center;padding:24px 16px;margin-top:30px;font-size:.92rem}footer a{color:var(--gold)}
+</style>
+</head>
+<body>
+<header><h1>Settlement Offer <span>Pack Checker</span></h1><p>Check settlement offer packs for completeness, fee and schedule maths, and expiry risk before they go to a client, with a plain-language client summary and audit CSV.</p><div class="stats"><span>Free</span><span>100% in your browser</span><span>No sign-up</span></div></header>
+<main><div class="card">
+<label for="fileInput">Upload an offer pack CSV</label><input type="file" id="fileInput" accept=".csv,text/csv,text/plain">
+<label for="csvInput">Or paste CSV here (one row per offer pack)</label>
+<textarea id="csvInput">pack_id,client_ref,creditor,enrolled_balance,offer_amount,offer_expiry,payment_schedule,client_approval,fee_amount,fee_percent,state
+P1,Client 001,Creditor A,10000,4000,2027-06-01,1000;1000;2000,yes,2500,25,FL
+P2,Client 002,Bank Example,8000,5000,2026-03-01,2000;2000,no,2000,25,FL</textarea>
+<div class="row">
+<div><label for="feePct">Expected fee percent</label><input type="number" id="feePct" value="25"></div>
+<div><label for="balance">Dedicated account balance</label><input type="number" id="balance" value="1500"></div>
+<div><label for="monthly">Monthly draft amount</label><input type="number" id="monthly" value="300"></div>
+<div><label for="refDate">Projection start date</label><input type="text" id="refDate" value="2026-01-01"></div>
+</div>
+<button class="btn-run" id="runBtn">Check offer packs</button>
+<div id="summary" class="small" style="margin-top:12px"></div><div id="results"></div>
+<button class="btn-sub" id="dlBtn" type="button" style="display:none">Download audit CSV</button>
+<label for="packPick">Client summary for pack</label><select id="packPick"></select>
+<button class="btn-sub" id="sumBtn" type="button">Download client summary (.txt)</button>
+<pre id="sumOut"></pre>
+<p class="small">Disclaimer: operations checklist tool, not legal or financial advice. Synthetic sample data only (Creditor A, Bank Example).</p>
+<p class="privacy">Runs 100% in your browser. Your files never leave this device.</p>
+</div></main>
+<section class="how"><h2>How it works</h2><ul><li>Completeness gate per offer pack: creditor, enrolled balance, offer amount, expiry, payment schedule and client approval must all be present.</li><li>Arithmetic validation: the payment schedule must sum to the offer amount, and the fee amount must match the fee percent of the enrolled balance.</li><li>Expiry-risk check: projects the date the dedicated account can fund the offer from its current balance plus monthly drafts, and flags offers expiring before that date.</li><li>Plain-language client summary for a selected pack (what you will pay, to whom, by when, what the fee is, total cost), downloadable as text, plus a downloadable audit CSV.</li></ul></section>
+<footer>
+  <p>Built by Amir Hussain, operations manager and founder of <a href="https://aamirtechs.com" target="_blank" rel="noopener">AamirTechs: operations, customer support and e-commerce services</a>.</p>
+  <p><a href="https://github.com/aamirtechs" target="_blank" rel="noopener">More open source tools on GitHub</a></p>
+</footer>
+<script src="src/logic.js"></script>
+<script>
+var L=window.SettlementOfferPackChecker, last=null, lastRows=[];
+function esc(s){return String(s).replace(/</g,"&lt;");}
+function cfg(){return {expectedFeePercent:Number(document.getElementById("feePct").value)||0, accountBalance:Number(document.getElementById("balance").value)||0, monthlyDraft:Number(document.getElementById("monthly").value)||0, referenceDate:document.getElementById("refDate").value||"2026-01-01"};}
+function run(){ lastRows=L.parseCSV(document.getElementById("csvInput").value); last=L.auditPacks(lastRows,cfg());
+ document.getElementById("summary").textContent=last.summary.total+" packs checked: "+last.summary.pass+" pass, "+last.summary.fail+" fail.";
+ var h="<table><tr><th>Pack</th><th>Client</th><th>Creditor</th><th>Offer</th><th>Schedule sum</th><th>Funding date</th><th>Status</th><th>Failed checks</th></tr>";
+ last.results.forEach(function(r){h+="<tr><td>"+esc(r.packId)+"</td><td>"+esc(r.clientRef)+"</td><td>"+esc(r.creditor)+"</td><td>"+(r.offerAmount||"")+"</td><td>"+r.scheduleSum+"</td><td>"+esc(r.fundingDate)+"</td><td>"+(r.status==="PASS"?'<span class="ok">PASS</span>':'<span class="flag">FAIL</span>')+"</td><td>"+esc(r.failedChecks.join("; "))+"</td></tr>";});
+ document.getElementById("results").innerHTML=h+"</table>";
+ document.getElementById("dlBtn").style.display=last.results.length?"inline-block":"none";
+ var sel=document.getElementById("packPick"); sel.innerHTML=lastRows.map(function(r,i){return '<option value="'+i+'">'+esc(r.pack_id||("row "+(i+1)))+"</option>";}).join("");
+ showSummary(); }
+function showSummary(){ var i=Number(document.getElementById("packPick").value)||0; if(lastRows[i]) document.getElementById("sumOut").textContent=L.buildClientSummary(lastRows[i], last?last.results[i]:null); }
+function download(name,text,type){ var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([text],{type:type||"text/plain"})); a.download=name; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},500); }
+document.getElementById("runBtn").addEventListener("click",run);
+document.getElementById("packPick").addEventListener("change",showSummary);
+document.getElementById("sumBtn").addEventListener("click",function(){showSummary(); download("client-summary.txt",document.getElementById("sumOut").textContent);});
+document.getElementById("dlBtn").addEventListener("click",function(){ if(last) download("offer-pack-audit.csv",L.toAuditCSV(last.results),"text/csv"); });
+document.getElementById("fileInput").addEventListener("change",function(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){document.getElementById("csvInput").value=r.result;}; r.readAsText(f); });
+</script></body></html>
